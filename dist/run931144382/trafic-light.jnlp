@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="trafic-light.jnlp">
+  <information>
+    <title>trafic-light</title>
+    <vendor>rubictron</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="lib/RXTXcomm.jar" size="60898" download="eager" />
+    <jar href="lib/arduino.jar" size="6873" download="eager" />
+    <jar href="lib/jSerialComm-2.2.0.jar" size="637026" download="eager" />
+    <jar href="lib/jfoenix-8.0.7.jar" size="2631271" download="eager" />
+    <jar href="trafic-light.jar" size="14534" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="trafic-light" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="rubictron.traficlight.main.FXMain"  name="trafic-light" />
+  <update check="always"/>
+</jnlp>
