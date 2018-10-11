@@ -20,9 +20,9 @@ public class SerialCom {
     public SerialCom() {
 
         arduino = new Arduino(ArduinoPort, BAUD_RATE);
-        arduino.openConnection();
-        arduino.serialWrite('1');
-        arduino.serialWrite('1', 20);
+//        arduino.openConnection();
+//        arduino.serialWrite('1');
+//        arduino.serialWrite('1', 20);
     }
 
     public SerialCom(String ArduinoPort, int BAUD_RATE) {
@@ -30,15 +30,15 @@ public class SerialCom {
         this.BAUD_RATE = BAUD_RATE;
 
         arduino = new Arduino(this.ArduinoPort, this.BAUD_RATE);
-        arduino.openConnection();
+//        arduino.openConnection();
 
     }
 
     public void send(String s) {
 
         this.getArduino().openConnection();
-        this.getArduino().serialWrite(s);
-        this.getArduino().serialWrite('\n');
+        this.getArduino().serialWrite(s + "\n");
+        System.out.println("Serial Write = " + s);
         this.getArduino().closeConnection();
 
     }

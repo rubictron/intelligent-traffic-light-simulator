@@ -14,8 +14,12 @@ import java.util.TimerTask;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.shape.Circle;
 import rubictron.traficlight.controller.lightController;
+import rubictron.traficlight.service.SerialCom;
 
 /**
  * FXML Controller class
@@ -57,6 +61,41 @@ public class DashboardController implements Initializable {
     private Circle greenBL;
     @FXML
     private Circle greenCR;
+    @FXML
+    private JFXTextField BL;
+    @FXML
+    private JFXTextField AL;
+    @FXML
+    private JFXTextField BR;
+    @FXML
+    private JFXTextField AR;
+    @FXML
+    private JFXTextField port;
+    @FXML
+    private Button btnArduino;
+    @FXML
+    private JFXTextField CT;
+
+    @FXML
+    private void btnArduinoClick(ActionEvent event) {
+        try {
+            arduino = new SerialCom(port.getText(), 9600);
+            arduino.send("stop");
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Arduino Connected Successfully");
+
+            alert.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Error Connecting Arduino");
+            alert.setContentText("Try again with correct port and correct Connections");
+
+            alert.showAndWait();
+        }
+    }
 
     enum Road {
         AL, AR, BL, BR
@@ -76,7 +115,7 @@ public class DashboardController implements Initializable {
     private JFXButton btnStop;
 
     lightController lController;
-//    SerialCom arduino=new SerialCom("/dev/ttyACM0", 9600);
+    SerialCom arduino;
 
     /**
      * Initializes the controller class.
@@ -99,18 +138,20 @@ public class DashboardController implements Initializable {
         D = Double.parseDouble(flowRD.getText());
         lController.setRate(A, B, C, D);
         double[] data = lController.getData();
-        System.out.println("BL = " + dtoSecond(data[0])
-                + "\nAL = " + dtoSecond(data[1])
-                + "\nBR = " + dtoSecond(data[2])
-                + "\nAR = " + dtoSecond(data[3]));
-        
-        String str=""+ dtoSecond(data[0])
+        BL.setText("" + dtoSecond(data[0])+" s");
+        AL.setText("" + dtoSecond(data[1])+" s");
+        BR.setText("" + dtoSecond(data[2])+" s");
+        AR.setText("" + dtoSecond(data[3])+" s");
+        CT.setText("" + dtoSecond(data[4])+" s");
+
+        String str = "" + dtoSecond(data[0])
                 + dtoSecond(data[1])
                 + dtoSecond(data[2])
-                + dtoSecond(data[3])+"\n";
+                + dtoSecond(data[3]);
         System.out.println(str);
-
-
+        if (arduino != null) {
+            arduino.send(str);
+        }
         runOnetime(data[0],
                 data[1],
                 data[2],
@@ -135,19 +176,25 @@ public class DashboardController implements Initializable {
 
         TimerTask alert = new TimerTask() {
             public void run() {
-                alertRoad(Road.AL);
+                alertRoad(Road.AR);
             }
         };
 
         TimerTask alert2 = new TimerTask() {
             public void run() {
-                alertRoad(Road.BL);
+                alertRoad(Road.BR);
             }
         };
 
         TimerTask alert3 = new TimerTask() {
             public void run() {
-                alertRoad(Road.AL);
+                alertRoad(Road.AR);
+            }
+        };
+
+        TimerTask alert4 = new TimerTask() {
+            public void run() {
+                alertRoad(Road.BR);
             }
         };
 
@@ -172,6 +219,7 @@ public class DashboardController implements Initializable {
         TimerTask task4 = new TimerTask() {
             public void run() {
                 allLightOff();
+//                arduino.send("stop");
             }
         };
 
@@ -194,10 +242,12 @@ public class DashboardController implements Initializable {
         timer.schedule(task3, delay);
 
         delay += dtoMill(d * 0.9);
+        timer.schedule(alert4, delay);
+        delay += dtoMill(d * 0.1);
         timer.schedule(task4, delay);
+
 //        delay+=dtoL(d*0.1);
 //        timer.schedule(alert, delay);
-
     }
 
     @FXML
